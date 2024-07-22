@@ -1,13 +1,13 @@
 vars {
   baseUrl: {{.BaseURL}}
-  {{if .UseCognito}}
+  {{- if .UseCognito}}
   cognito-client-id: {{ "{{" }}process.env.COGNITO_CLIENT_ID{{ "}}" }}
   cognito-user-pool-id: {{ "{{" }}process.env.COGNITO_USER_POOL_ID{{ "}}" }}
   cognito-region: {{ "{{" }}process.env.COGNITO_REGION{{ "}}" }}
-  {{end}}
+  {{- end}}
 }
 vars:secret [
-{{if .UseCognito}}
+{{- if .UseCognito}}
   username,
   password,
   cachedToken,
@@ -17,5 +17,5 @@ vars:secret [
   refreshTokenExpiration,
   cachedUsername,
   cachedPassword
-{{end}}
+{{- end}}
 ]

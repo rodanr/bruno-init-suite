@@ -1,6 +1,6 @@
 script:pre-request {
-{{if .UseCognito}}
+{{- if .UseCognito}}
   const auth = require('./lib/cognito-auth');
   await auth.login();
-{{end}}
+{{- end}}
 }

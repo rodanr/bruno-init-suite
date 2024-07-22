@@ -7,9 +7,9 @@
     ".git"
   ],
   "presets": {
-    {{if .UseBaseURL}}
+    {{- if .UseBaseURL}}
     "requestType": "{{.BaseURLType}}",
     "requestUrl": {{ "{{" }}baseUrl{{ "}}" }}
-    {{end}}
+    {{- end}}
   }
 }
