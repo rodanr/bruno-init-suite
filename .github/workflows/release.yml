@@ -11,39 +11,64 @@ jobs:
 
     strategy:
       matrix:
-        goos: [windows, linux, darwin]
-        goarch: [amd64, 386, arm64]
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        arch: [amd64, arm64]
+        exclude:
+          - os: windows-latest
+            arch: arm64
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Set up Go
-        uses: actions/setup-go@v2
+        uses: actions/setup-go@v3
         with:
           go-version: 1.18
 
+      - name: Set up Environment Variables
+        run: |
+          echo "VERSION=$(git describe --tags --always)" >> $GITHUB_ENV
+
       - name: Build binaries
+        env:
+          GOOS: ${{ matrix.os == 'ubuntu-latest' && 'linux' || matrix.os == 'macos-latest' && 'darwin' || 'windows' }}
+          GOARCH: ${{ matrix.arch }}
+          VERSION: ${{ env.VERSION }}
         run: |
           mkdir -p build
-          GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} go build -ldflags "-X bruno-init-suite/internal/version.Version=${{ github.ref }}" -o build/bruno-init-suite-${{ matrix.goos }}-${{ matrix.goarch }}
+          OUTPUT="build/bruno-init-suite-${GOOS}-${GOARCH}"
+          if [ "${GOOS}" == "windows" ]; then
+            OUTPUT+=".exe"
+          fi
+          echo "Building for ${GOOS}/${GOARCH}..."
+          env GOOS=${GOOS} GOARCH=${GOARCH} go build -ldflags "-X bruno-init-suite/internal/version.Version=${VERSION}" -o "${OUTPUT}"
 
       - name: Archive binaries
         run: |
           cd build
           for FILE in *; do
-            if [[ $FILE == *.exe ]]; then
-              zip "${FILE}.zip" "$FILE"
+            if [ "${{ matrix.os }}" == "windows-latest" ]; then
+              zip "${FILE}.zip" "${FILE}"
             else
-              tar -czvf "${FILE}.tar.gz" "$FILE"
+              tar -czvf "${FILE}.tar.gz" "${FILE}"
             fi
           done
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        with:
+          token: ${{ secrets.PAT_TOKEN }}
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
 
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1
         with:
-          repo_token: ${{ secrets.PAT_TOKEN }}
-          release_id: ${{ github.event.release.id }}
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: build/*
-          asset_name: ${{ matrix.goos }}-${{ matrix.goarch }}-${{ github.sha }}
-          asset_content_type: application/zip
+          asset_name: ${{ matrix.os }}-${{ matrix.arch }}-${{ github.sha }}.${{ matrix.os == 'windows-latest' && 'zip' || 'tar.gz' }}
+          asset_content_type: ${{ matrix.os == 'windows-latest' && 'application/zip' || 'application/gzip' }}
