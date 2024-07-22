@@ -13,9 +13,10 @@ var (
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "bruis", // short form for bruno init suite
-	Short: "CLI tool for generating bruno docs with custom configurations",
-	Long:  `A CLI tool to automate the creation of Bruno docs and integration with third part services, including scripts and configurations`,
+	Use:     "bruno-init-suite",
+	Aliases: []string{"bruis"}, // short form for bruno init suite
+	Short:   "CLI tool for generating bruno docs with custom configurations",
+	Long:    `A CLI tool to automate the creation of Bruno docs and integration with third part services, including scripts and configurations`,
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
 		if showVersion {
 			fmt.Printf("bruno-init-suite version %s\n", version.Version)
