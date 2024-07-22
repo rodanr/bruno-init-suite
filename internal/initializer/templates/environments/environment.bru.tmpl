@@ -1,9 +1,9 @@
 vars {
-  base-url: {{.BaseURL}}
+  baseUrl: {{.BaseURL}}
   {{if .UseCognito}}
-  cognito-client-id: {{process.env.COGNITO_CLIENT_ID}}
-  cognito-user-pool-id: {{process.env.COGNITO_USER_POOL_ID}}
-  cognito-region: {{process.env.COGNITO_REGION}}
+  cognito-client-id: {{ "{{" }}process.env.COGNITO_CLIENT_ID{{ "}}" }}
+  cognito-user-pool-id: {{ "{{" }}process.env.COGNITO_USER_POOL_ID{{ "}}" }}
+  cognito-region: {{ "{{" }}process.env.COGNITO_REGION{{ "}}" }}
   {{end}}
 }
 vars:secret [
