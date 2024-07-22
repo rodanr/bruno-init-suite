@@ -9,6 +9,7 @@ import (
 
 var useCognito bool
 var projectName string
+var baseUrl string
 
 var initCmd = &cobra.Command{
 	Use:   "init",
@@ -20,7 +21,7 @@ var initCmd = &cobra.Command{
 			return fmt.Errorf("failed to determine absolute path: %w", err)
 		}
 
-		err = initializer.Initialize(absOutputDir, projectName, useCognito)
+		err = initializer.Initialize(absOutputDir, projectName, baseUrl, useCognito)
 		if err != nil {
 			return err
 		}
@@ -37,4 +38,6 @@ func init() {
 	initCmd.Flags().BoolVarP(&useCognito, "cognito", "", false, "Use AWS Cognito for authentication")
 	// The flag for name is used to set the project name
 	initCmd.Flags().StringVarP(&projectName, "name", "n", "bruno-docs", "Name of the project")
+	// The flag for baseUrl is used to set the base URL for the project
+	initCmd.Flags().StringVarP(&baseUrl, "baseUrl", "b", "http://localhost:8080", "Base URL for the project")
 }

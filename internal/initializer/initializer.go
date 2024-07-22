@@ -23,10 +23,13 @@ type templateData struct {
 }
 
 // Initialize initializes a new Bruno project in the specified output directory.
-func Initialize(outputDir, projectName string, useCognito bool) error {
+func Initialize(outputDir, projectName, baseUrl string, useCognito bool) error {
 	data := templateData{
 		ProjectName: projectName,
 		UseCognito:  useCognito,
+		BaseURL:     baseUrl,
+		UseBaseURL:  baseUrl != "",
+		BaseURLType: "http",
 	}
 
 	dirs := []string{
