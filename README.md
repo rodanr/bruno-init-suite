@@ -90,7 +90,13 @@ bruis init [flags]
 Initialize a new Bruno project named "my-bruno-docs" with AWS Cognito authentication and a custom base URL:
 
 ```sh
+mkdir my-bruno-docs
+cd my-bruno-docs
 bruis init -c -n my-bruno-docs -b https://api.example.com
+```
+or
+```sh
+bruis init -c -n my-bruno-docs -b https://api.example.com -o my-bruno-docs
 ```
 
 This command will generate the necessary Bruno documentation files and configurations in the specified output directory.
