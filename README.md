@@ -119,3 +119,7 @@ The generated project will have the following structure:
 ## Contributing
 
 We welcome contributions to improve this project! If you encounter any issues, have suggestions for features, or want to contribute in any way, please feel free to create a GitHub issue.
+
+## YouTube Channel
+
+For tutorials and more information, check out our [YouTube Channel](https://www.youtube.com/@BrunoInitSuite).
