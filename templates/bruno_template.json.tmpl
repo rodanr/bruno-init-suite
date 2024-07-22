@@ -1,0 +1,15 @@
+{
+  "version": "1",
+  "name": "{{.ProjectName}}",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ],
+  "presets": {
+    {{if .UseBaseURL}}
+    "requestType": "{{.BaseURLType}}",
+    "requestUrl": "{{base-url}}/"
+    {{end}}
+  }
+}

@@ -11,7 +11,7 @@ import (
 
 // Embed templates
 //
-//go:embed templates/*
+//go:embed templates/*.tmpl templates/environments/*.tmpl templates/lib/*.tmpl
 var templateFS embed.FS
 
 type templateData struct {
@@ -26,18 +26,13 @@ type templateData struct {
 func Initialize(outputDir, projectName string, useCognito bool) error {
 	data := templateData{
 		ProjectName: projectName,
+		UseCognito:  useCognito,
 	}
 
 	dirs := []string{
 		outputDir,
 		filepath.Join(outputDir, "environments"),
 		filepath.Join(outputDir, "lib"),
-	}
-
-	if useCognito {
-		if err := copyFile("templates/cognito-auth.js", filepath.Join(outputDir, "lib", "cognito-auth.js")); err != nil {
-			return err
-		}
 	}
 
 	for _, dir := range dirs {
@@ -47,14 +42,20 @@ func Initialize(outputDir, projectName string, useCognito bool) error {
 	}
 
 	files := map[string]string{
-		"templates/bruno_template.json":          filepath.Join(outputDir, "bruno.json"),
-		"templates/collection_template.bru":      filepath.Join(outputDir, "collection.bru"),
-		"templates/env_template.env":             filepath.Join(outputDir, ".env"),
-		"templates/environments/environment.bru": filepath.Join(outputDir, "environments", "environment.bru"),
+		"templates/bruno_template.json.tmpl":          filepath.Join(outputDir, "bruno.json"),
+		"templates/collection_template.bru.tmpl":      filepath.Join(outputDir, "collection.bru"),
+		"templates/env_template.env.tmpl":             filepath.Join(outputDir, ".env"),
+		"templates/environments/environment.bru.tmpl": filepath.Join(outputDir, "environments", "environment.bru"),
 	}
 
 	for tpl, dest := range files {
 		if err := generateFile(tpl, dest, data); err != nil {
+			return err
+		}
+	}
+
+	if useCognito {
+		if err := copyFile("templates/lib/cognito_auth.js.tmpl", filepath.Join(outputDir, "lib", "cognito-auth.js")); err != nil {
 			return err
 		}
 	}
