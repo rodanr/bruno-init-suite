@@ -47,7 +47,7 @@ func Initialize(outputDir, projectName, baseUrl string, useCognito bool) error {
 	files := map[string]string{
 		"templates/bruno_template.json.tmpl":          filepath.Join(outputDir, "bruno.json"),
 		"templates/collection_template.bru.tmpl":      filepath.Join(outputDir, "collection.bru"),
-		"templates/env_template.env.tmpl":             filepath.Join(outputDir, ".env"),
+		"templates/env_template.env.tmpl":             filepath.Join(outputDir, ".env.example"),
 		"templates/environments/environment.bru.tmpl": filepath.Join(outputDir, "environments", "environment.bru"),
 	}
 
