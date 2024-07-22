@@ -110,8 +110,9 @@ jobs:
 
       - name: Upload Linux amd64 Asset
         uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
         with:
-          token: ${{ secrets.PAT_TOKEN }}
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: build/bruno-init-suite-linux-amd64.tar.gz
           asset_name: bruno-init-suite-linux-amd64.tar.gz
@@ -119,8 +120,9 @@ jobs:
 
       - name: Upload Linux arm64 Asset
         uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
         with:
-          token: ${{ secrets.PAT_TOKEN }}
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: build/bruno-init-suite-linux-arm64.tar.gz
           asset_name: bruno-init-suite-linux-arm64.tar.gz
@@ -128,8 +130,9 @@ jobs:
 
       - name: Upload macOS amd64 Asset
         uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
         with:
-          token: ${{ secrets.PAT_TOKEN }}
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: build/bruno-init-suite-darwin-amd64.tar.gz
           asset_name: bruno-init-suite-darwin-amd64.tar.gz
@@ -137,8 +140,9 @@ jobs:
 
       - name: Upload macOS arm64 Asset
         uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
         with:
-          token: ${{ secrets.PAT_TOKEN }}
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: build/bruno-init-suite-darwin-arm64.tar.gz
           asset_name: bruno-init-suite-darwin-arm64.tar.gz
@@ -146,8 +150,9 @@ jobs:
 
       - name: Upload Windows amd64 Asset
         uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
         with:
-          token: ${{ secrets.PAT_TOKEN }}
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: build/bruno-init-suite-windows-amd64.exe.zip
           asset_name: bruno-init-suite-windows-amd64.exe.zip
@@ -155,8 +160,9 @@ jobs:
 
       - name: Upload Windows 386 Asset
         uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
         with:
-          token: ${{ secrets.PAT_TOKEN }}
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: build/bruno-init-suite-windows-386.exe.zip
           asset_name: bruno-init-suite-windows-386.exe.zip
