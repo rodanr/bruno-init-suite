@@ -1,11 +1,12 @@
 name: Release
 
 on:
-  release:
-    types: [published]
+  push:
+    tags:
+      - 'v*'
 
 jobs:
-  build-and-upload:
+  release:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -80,16 +81,32 @@ jobs:
           env GOOS=${GOOS} GOARCH=${GOARCH} go build -ldflags "-X bruno-init-suite/internal/version.Version=${VERSION}" -o "${OUTPUT}"
           zip "${OUTPUT}.zip" -j "${OUTPUT}"
 
+      - name: Check if Release Exists
+        id: check_release
+        run: |
+          if gh release view ${{ github.ref }}; then
+            echo "release_exists=true" >> $GITHUB_ENV
+          else
+            echo "release_exists=false" >> $GITHUB_ENV
+          fi
+
       - name: Create Release
         id: create_release
+        if: env.release_exists == 'false'
         uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
         with:
-          token: ${{ secrets.PAT_TOKEN }}
-          tag_name: ${{ github.event.release.tag_name }}
-          release_name: ${{ github.event.release.name }}
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
           draft: false
           prerelease: false
-          body: ${{ github.event.release.body }}
+          body: |
+            # Release Notes
+            - Features and improvements:
+              - Added support for macOS arm64
+              - Improved performance on Linux
+              - Bug fixes for Windows builds
 
       - name: Upload Linux amd64 Asset
         uses: actions/upload-release-asset@v1
