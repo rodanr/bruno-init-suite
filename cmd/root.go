@@ -6,6 +6,8 @@ import (
 	"os"
 )
 
+var outputDir string
+
 var rootCmd = &cobra.Command{
 	Use:   "bruis", // short form for bruno init suite
 	Short: "CLI tool for generating bruno docs with custom configurations",
@@ -22,4 +24,6 @@ func Execute() {
 }
 
 func init() {
+	// Global flag for output directory
+	rootCmd.PersistentFlags().StringVarP(&outputDir, "output", "o", "", "Output directory for generated Bruno docs")
 }
