@@ -16,11 +16,13 @@ var templateFS embed.FS
 
 type templateData struct {
 	ProjectName string
+	UseBaseURL  bool
 	BaseURL     string
 	BaseURLType string
 	UseCognito  bool
 }
 
+// Initialize initializes a new Bruno project in the specified output directory.
 func Initialize(outputDir, projectName string, useCognito bool) error {
 	data := templateData{
 		ProjectName: projectName,
@@ -60,6 +62,7 @@ func Initialize(outputDir, projectName string, useCognito bool) error {
 	return nil
 }
 
+// generateFile generates a file from a template file and writes it to the output path.
 func generateFile(templatePath, outputPath string, data templateData) error {
 	tmplContent, err := templateFS.ReadFile(templatePath)
 	if err != nil {
@@ -88,6 +91,7 @@ func generateFile(templatePath, outputPath string, data templateData) error {
 	return nil
 }
 
+// copyFile copies a file from the source path to the destination path.
 func copyFile(srcPath, dstPath string) error {
 	srcFile, err := templateFS.Open(srcPath)
 	if err != nil {
