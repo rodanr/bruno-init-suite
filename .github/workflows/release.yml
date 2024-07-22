@@ -6,17 +6,8 @@ on:
       - 'v*'
 
 jobs:
-  build:
+  release:
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-        arch: [amd64, arm64]
-        exclude:
-          - os: windows-latest
-            arch: arm64
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -27,48 +18,124 @@ jobs:
           go-version: 1.18
 
       - name: Set up Environment Variables
-        run: |
-          echo "VERSION=$(git describe --tags --always)" >> $GITHUB_ENV
+        run: echo "VERSION=$(git describe --tags --always)" >> $GITHUB_ENV
 
-      - name: Build binaries
+      - name: Build for Linux amd64
         env:
-          GOOS: ${{ matrix.os == 'ubuntu-latest' && 'linux' || matrix.os == 'macos-latest' && 'darwin' || 'windows' }}
-          GOARCH: ${{ matrix.arch }}
+          GOOS: linux
+          GOARCH: amd64
           VERSION: ${{ env.VERSION }}
         run: |
           mkdir -p build
           OUTPUT="build/bruno-init-suite-${GOOS}-${GOARCH}"
-          if [ "${GOOS}" == "windows" ]; then
-            OUTPUT+=".exe"
-          fi
-          echo "Building for ${GOOS}/${GOARCH}..."
           env GOOS=${GOOS} GOARCH=${GOARCH} go build -ldflags "-X bruno-init-suite/internal/version.Version=${VERSION}" -o "${OUTPUT}"
+          tar -czvf "${OUTPUT}.tar.gz" -C build "bruno-init-suite-${GOOS}-${GOARCH}"
 
-      - name: Archive binaries
+      - name: Build for Linux arm64
+        env:
+          GOOS: linux
+          GOARCH: arm64
+          VERSION: ${{ env.VERSION }}
         run: |
-          cd build
-          for FILE in *; do
-            if [ "${{ matrix.os }}" == "windows-latest" ]; then
-              zip "${FILE}.zip" "${FILE}"
-            else
-              tar -czvf "${FILE}.tar.gz" "${FILE}"
-            fi
-          done
+          OUTPUT="build/bruno-init-suite-${GOOS}-${GOARCH}"
+          env GOOS=${GOOS} GOARCH=${GOARCH} go build -ldflags "-X bruno-init-suite/internal/version.Version=${VERSION}" -o "${OUTPUT}"
+          tar -czvf "${OUTPUT}.tar.gz" -C build "bruno-init-suite-${GOOS}-${GOARCH}"
+
+      - name: Build for macOS amd64
+        env:
+          GOOS: darwin
+          GOARCH: amd64
+          VERSION: ${{ env.VERSION }}
+        run: |
+          OUTPUT="build/bruno-init-suite-${GOOS}-${GOARCH}"
+          env GOOS=${GOOS} GOARCH=${GOARCH} go build -ldflags "-X bruno-init-suite/internal/version.Version=${VERSION}" -o "${OUTPUT}"
+          tar -czvf "${OUTPUT}.tar.gz" -C build "bruno-init-suite-${GOOS}-${GOARCH}"
+
+      - name: Build for macOS arm64
+        env:
+          GOOS: darwin
+          GOARCH: arm64
+          VERSION: ${{ env.VERSION }}
+        run: |
+          OUTPUT="build/bruno-init-suite-${GOOS}-${GOARCH}"
+          env GOOS=${GOOS} GOARCH=${GOARCH} go build -ldflags "-X bruno-init-suite/internal/version.Version=${VERSION}" -o "${OUTPUT}"
+          tar -czvf "${OUTPUT}.tar.gz" -C build "bruno-init-suite-${GOOS}-${GOARCH}"
+
+      - name: Build for Windows amd64
+        env:
+          GOOS: windows
+          GOARCH: amd64
+          VERSION: ${{ env.VERSION }}
+        run: |
+          OUTPUT="build/bruno-init-suite-${GOOS}-${GOARCH}.exe"
+          env GOOS=${GOOS} GOARCH=${GOARCH} go build -ldflags "-X bruno-init-suite/internal/version.Version=${VERSION}" -o "${OUTPUT}"
+          zip "${OUTPUT}.zip" -j "${OUTPUT}"
+
+      - name: Build for Windows 386
+        env:
+          GOOS: windows
+          GOARCH: 386
+          VERSION: ${{ env.VERSION }}
+        run: |
+          OUTPUT="build/bruno-init-suite-${GOOS}-${GOARCH}.exe"
+          env GOOS=${GOOS} GOARCH=${GOARCH} go build -ldflags "-X bruno-init-suite/internal/version.Version=${VERSION}" -o "${OUTPUT}"
+          zip "${OUTPUT}.zip" -j "${OUTPUT}"
 
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
         with:
-          token: ${{ secrets.PAT_TOKEN }}
           tag_name: ${{ github.ref }}
           release_name: Release ${{ github.ref }}
           draft: false
           prerelease: false
 
-      - name: Upload Release Asset
+      - name: Upload Linux amd64 Asset
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: build/*
-          asset_name: ${{ matrix.os }}-${{ matrix.arch }}-${{ github.sha }}.${{ matrix.os == 'windows-latest' && 'zip' || 'tar.gz' }}
-          asset_content_type: ${{ matrix.os == 'windows-latest' && 'application/zip' || 'application/gzip' }}
+          asset_path: build/bruno-init-suite-linux-amd64.tar.gz
+          asset_name: bruno-init-suite-linux-amd64.tar.gz
+          asset_content_type: application/gzip
+
+      - name: Upload Linux arm64 Asset
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: build/bruno-init-suite-linux-arm64.tar.gz
+          asset_name: bruno-init-suite-linux-arm64.tar.gz
+          asset_content_type: application/gzip
+
+      - name: Upload macOS amd64 Asset
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: build/bruno-init-suite-darwin-amd64.tar.gz
+          asset_name: bruno-init-suite-darwin-amd64.tar.gz
+          asset_content_type: application/gzip
+
+      - name: Upload macOS arm64 Asset
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: build/bruno-init-suite-darwin-arm64.tar.gz
+          asset_name: bruno-init-suite-darwin-arm64.tar.gz
+          asset_content_type: application/gzip
+
+      - name: Upload Windows amd64 Asset
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: build/bruno-init-suite-windows-amd64.exe.zip
+          asset_name: bruno-init-suite-windows-amd64.exe.zip
+          asset_content_type: application/zip
+
+      - name: Upload Windows 386 Asset
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: build/bruno-init-suite-windows-386.exe.zip
+          asset_name: bruno-init-suite-windows-386.exe.zip
+          asset_content_type: application/zip
