@@ -35,7 +35,7 @@ func init() {
 	rootCmd.AddCommand(initCmd)
 	// Add flags to the init command
 	// The flag useCognito is used to determine if the project will use AWS Cognito for authentication
-	initCmd.Flags().BoolVarP(&useCognito, "cognito", "", false, "Use AWS Cognito for authentication")
+	initCmd.Flags().BoolVarP(&useCognito, "cognito", "c", false, "Use AWS Cognito for authentication")
 	// The flag for name is used to set the project name
 	initCmd.Flags().StringVarP(&projectName, "name", "n", "bruno-docs", "Name of the project")
 	// The flag for baseUrl is used to set the base URL for the project
