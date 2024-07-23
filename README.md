@@ -3,6 +3,7 @@
 
 ## Overview
 <img align="right" width="128px" src="https://github.com/user-attachments/assets/11703489-d50a-45bb-8caf-7b5a746454db">
+
 `bruno-init-suite` is a CLI tool designed to automate the creation of Bruno documentation and integration with third-party services, including scripts and configurations. This tool simplifies the initialization of Bruno projects with custom configurations, such as using AWS Cognito for authentication.
 
 
